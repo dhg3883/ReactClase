@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import './DUX.css';
 import reportWebVitals from './reportWebVitals';
+import Formulario from './components/03-formulario';
+import Registrar from './components/registrarUser';
+import Login from './components/LoginUser';
+import Principal from './components/principal';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Login />
   </React.StrictMode>
 );
 

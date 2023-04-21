@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cine</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<header>
+    <div class="menu_bar">
+        <i class="fas fa-bars" id="mi"></i>
+        <a href="#" class="btn_menu">Menu</a>
+    </div>
+    <nav>
+        <span id="logo">
+        </span>
+        <ul>
+            <li><a href="/Articulos"><i class="fas fa-home"></i>Inicio</a></li>
+            <li><a href="/Admin"><i class="fas fa-briefcase"></i>Admin</a></li>
+            <li><a href="/com"><i class="fab fa-servicestack"></i>Comentar</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+
+    <div id="contenedoradmin">
+        <h1 id="Titulo">Comentar</h1>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">ID</span>
+            </div>
+            <input type="text" class="form-control" id="idamodificar" placeholder="ID" aria-label="Username"
+                aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Comentar</span>
+            </div>
+            <input type="text" class="form-control" id="COMENTAR" placeholder="Comentario" aria-label="Username"
+                aria-describedby="basic-addon1">
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="modificaralbackend()">Enviar</button>
+        <br>
+
+
+        <table class="table table-dark">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Nombre del Articulo</th>
+                    <th scope="col">Informacion</th>
+                    <th scope="col">Imagen</th>
+                </tr>
+            </thead>
+            <tbody id="tabla">
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.js"></script>
+<link rel="stylesheet" href="proyectocss">
+<script src="/funcioncine"></script>
+<script type="text/javascript">
+    var cineinstanciado = new cine();
+    function mostrar() {
+        //ensenia la tabla de todos los datos
+        cineinstanciado.Seleccionartodos().then(function (response) {
+            document.getElementById('tabla').innerHTML = ''
+            for (var elemento in response) {
+
+                document.getElementById("tabla").innerHTML +=
+                    //hora de imprimir los datos
+                    '<tr>'+
+                    '<td>' + response[elemento]._id + "</td>" +
+                    '<td>' + response[elemento].NOMBREMUS + "</td>" +
+                    '<td>' + response[elemento].NOMBOBRA + "</td>" +
+                    '<td>' + response[elemento].INFOEXTOBRA + "</td>" +
+                    '<td><img src="' + response[elemento].IMAGENOBRA + '"></td>' +
+                    '<tr><h5>Comentarios del articulo</h5></tr>'
+                for (let i = 1; i < response[elemento].COMENTAR.length; i++) {
+                    document.getElementById("tabla").innerHTML +=
+                        '<tr><td id="comentarios"><ul><li>' + response[elemento].COMENTAR[i] + '</li></ul></td></tr>'
+
+                }
+                document.getElementById("tabla").innerHTML +=
+                    '<td><button type="button" class="btn btn-info btn-sm btn-block" onclick="modificarenbd(\'' + response[elemento]._id + '\')"/>Elegir</button></td>' +
+                    '</tr>'
+                //imprime todos los comentarios
+
+
+
+            }
+
+        }, function (error) {
+            console.error("Fallo esta cosa", error);
+            alert("D:" + error)
+        }
+        )
+
+
+    }
+    //Cambia el local storage
+    function modificarenbd(iddelaoperacion) {
+        for (var elemento in JSON.parse(localStorage.getItem('listadeoperaciones'))) {
+            if (JSON.parse(localStorage.getItem('listadeoperaciones'))[elemento]._id == iddelaoperacion) {
+                document.getElementById('COMENTAR').value = JSON.parse(localStorage.getItem('listadeoperaciones'))
+                [elemento].COMENTAR;
+                document.getElementById('idamodificar').value = JSON.parse(localStorage.getItem('listadeoperaciones'))
+                [elemento]._id;
+                break;
+            }
+        }
+
+    }
+    function modificaralbackend() {
+        //modifica verdaderamente el codigo
+        cineinstanciado.COMENTAR = document.getElementById('COMENTAR').value;
+        cineinstanciado._id = document.getElementById('idamodificar').value;
+        cineinstanciado.Comentar().then(
+            function (response) {
+                localStorage.setItem("listadeoperaciones", JSON.stringify(response))
+                alert('Dato modificado');
+                document.getElementById('tabla').innerHTML = '';
+                mostrar()
+            },
+            function (err) {
+                alert(err);
+            }
+        );
+    }
+
+
+    window.onload = mostrar()
+</script>
+
+</html>

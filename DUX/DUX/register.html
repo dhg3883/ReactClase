@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" class="form-control" id="nombre" placeholder="Nombre" />
+    <input type="text" class="form-control" id="apellido" placeholder="Apellido" />
+    <input type="text" class="form-control" id="email" placeholder="Email" />
+    <input type="text" class="form-control" id="tipousuario" placeholder="tipo de usuario" />
+    <input type="text" class="form-control" id="password" placeholder="password" />
+    <input type="file" id="foto" placeholder="foto" />
+    <input type="button" onclick="guardarpersona()" value="Guardar" />  
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Email</th>
+                <th scope="col">Tipo de Usuario</th>
+                <th scope="col">Password</th>
+                <th scope="col">Imagen</th>
+            </tr>
+        </thead>
+        <tbody id="tabla">
+        </tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.js"></script>
+    <script src="/funcioncine"></script>
+    <script type="text/javascript">
+            
+        var logininstanciado = new login();
+        window.onload = mostrar()
+        function guardarpersona() {
+
+            Coment = ""
+            var logininstanciado = new login(0
+                , document.getElementById('nombre').value
+                , document.getElementById('apellido').value
+                , document.getElementById('email').value
+                , document.getElementById('tipousuario').value
+                , document.getElementById('password').value
+                , imagenbase64 )
+            //guardamos una coockie
+            logininstanciado.Guardarpersona().then(function (response) {
+                localStorage.setItem("listadeoperaciones", JSON.stringify(response))
+                console.log("ESTA COSA GUARDO", response)
+                alert("Registro exitoso")
+                mostrar()
+
+
+
+            }, function (error) {
+                console.error("Fallo esta cosa", error);
+                alert("D:" + error)
+            }
+            )
+
+
+        }
+        function mostrar() {
+        //mostramos toda la tabla de datos
+        logininstanciado.Seleccionartodos().then(function (response) {
+            document.getElementById("tabla").innerHTML = ''
+            for (var elemento in response) {
+                document.getElementById("tabla").innerHTML +=
+                    '<tr>' +
+                    '<td>' + response[elemento]._id + "</td>" +
+                    '<td>' + response[elemento].nombre + "</td>" +
+                    '<td>' + response[elemento].email + "</td>" +
+                    '<td>' + response[elemento].tipousuario + "</td>" +
+                    '<td>' + response[elemento].password + "</td>" +
+                    '<td><img src="' + response[elemento].foto + '" class="img-thumbnail"></td>' +
+                    '</tr>'
+
+
+            }
+        }, function (error) {
+            console.error("Fallo esta cosa", error);
+            alert("D:" + error)
+        }
+        )
+
+
+    }
+
+//convertimos la imagen en texto para poder enseniarla en la tabla
+let imagenbase64 = ""
+    $("#foto").change(function () {
+        readURL(this)
+    })
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                imagenbase64 = e.target.result
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    </script>
+</body>
+
+</html>
